@@ -112,7 +112,7 @@ def parse_fitness_machine_status(message: bytearray) -> FitnessMachineStatusMess
         inclination = int.from_bytes(message[1:3], byteorder="little", signed=True) / 10
         parsed_status = (FitnessMachineStatus.NEW_INCLINATION, inclination, "%")
     elif message[0] == 0x07:
-        resistance_level = int.from_bytes(message[1:3], byteorder="little", signed=True)
+        resistance_level = int.from_bytes(message[1], byteorder="little", signed=False)
         parsed_status = (FitnessMachineStatus.NEW_RESISTANCE, resistance_level, "%")
     elif message[0] == 0x08:
         power = int.from_bytes(message[1:3], byteorder="little", signed=True)
@@ -185,13 +185,13 @@ def parse_fitness_machine_status(message: bytearray) -> FitnessMachineStatusMess
         )
     elif message[0] == 0x12:
         parameter = IndoorBikeSimulationParameters(
-            wind_speed=int.from_bytes(message[1:3], byteorder="little", signed=False) / 1000,
-            grade=int.from_bytes(message[3:5], byteorder="little", signed=False) / 100,
+            wind_speed=int.from_bytes(message[1:3], byteorder="little", signed=True) / 1000,
+            grade=int.from_bytes(message[3:5], byteorder="little", signed=True) / 100,
             coefficient_of_rolling_resistance=int.from_bytes(
-                message[5:6], byteorder="little", signed=False
-            ) / 1000,
+                message[5], byteorder="little", signed=False
+            ) / 10000,
             wind_resistance_coefficient=int.from_bytes(
-                message[6:7], byteorder="little", signed=False
+                message[6], byteorder="little", signed=False
             ) / 100,
         )
         parsed_status = (
@@ -210,7 +210,7 @@ def parse_fitness_machine_status(message: bytearray) -> FitnessMachineStatusMess
         )
     elif message[0] == 0x14:
         spin_down_status = int.from_bytes(
-            message[1:2], byteorder="little", signed=False
+            message[1], byteorder="little", signed=False
         )
         parsed_status = (
             FitnessMachineStatus.NEW_SPIN_DOWN_STATUS,
